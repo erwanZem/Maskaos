@@ -88,7 +88,10 @@ public class Guy : MonoBehaviour
     {
         return GetColor() == otherGuy.GetColor();
     }
-
+    public bool IsSameColor(Color color)
+    {
+        return GetColor() == color;
+    }
     public void follow(Guy guy)
     {
         ennemy = guy;
@@ -106,5 +109,14 @@ public class Guy : MonoBehaviour
     public bool IsAlive()
     {
         return hp > 0;
+    }
+
+    public Rigidbody GetRigidbody()
+    {
+        return rigidbody;
+    }
+    public void setDamage(int damage)
+    {
+        hp -= damage;
     }
 }
