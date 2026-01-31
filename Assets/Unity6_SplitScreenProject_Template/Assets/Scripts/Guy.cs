@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 
 public class Guy : MonoBehaviour
@@ -10,23 +11,31 @@ public class Guy : MonoBehaviour
     private float speed = 100;
 
     [SerializeField]
+    private float attackSpeed = 2;
+
+    [SerializeField]
     private AudioClip claqueClip;
+
+    [SerializeField]
+    private AudioClip dieClip;
 
     private Guy ennemy = null;
 
     private AudioSource audioSource;
 
-    private Rigidbody rigidbody;
-
     private int hp = 10;
 
     protected int power = 1;
+
+    protected bool punching = false;
+
+    protected Rigidbody body;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        rigidbody = GetComponent<Rigidbody>();
+        body = GetComponent<Rigidbody>();
         power = Random.Range(1, 5);
     }
 
@@ -35,7 +44,7 @@ public class Guy : MonoBehaviour
     {
         if (!IsAlive())
         {
-            Destroy(gameObject);
+            StartCoroutine(Die());
         }
         else
         {
@@ -45,7 +54,7 @@ public class Guy : MonoBehaviour
                 //transform.Translate((transform.forward).normalized * speed * Time.deltaTime);
                 //transform.position = Vector3.MoveTowards(transform.position, ennemy.transform.position, speed);
 
-                rigidbody.AddForce(transform.forward * speed);
+                body.AddForce(transform.forward * speed);
 
                 Debug.DrawRay(transform.position, transform.forward, Color.black);
             }
@@ -62,7 +71,10 @@ public class Guy : MonoBehaviour
                 if (!IsSameColor(colGuy))
                 {
                     audioSource?.PlayOneShot(claqueClip);
-                    colGuy.GetPunched(this);
+                    if (!punching)
+                    {
+                        StartCoroutine(Punch(colGuy));
+                    }
                 }
             }
         }
@@ -88,22 +100,22 @@ public class Guy : MonoBehaviour
     {
         return GetColor() == otherGuy.GetColor();
     }
-    public bool IsSameColor(Color color)
-    {
-        return GetColor() == color;
-    }
+
     public void follow(Guy guy)
     {
         ennemy = guy;
     }
 
-    public void GetPunched(Guy meanGuy)
+    private IEnumerator Punch(Guy poorGuy)
     {
-        if (IsAlive() && meanGuy.IsAlive())
+        punching = true;
+        yield return new WaitForSeconds(1/attackSpeed);
+        if (poorGuy != null && poorGuy.body != null && IsAlive())
         {
-            rigidbody.AddForce(meanGuy.transform.forward * meanGuy.power * 100);
-            hp -= meanGuy.power;
+            poorGuy.body.AddForce(transform.forward * power * 10, ForceMode.Impulse);
+            hp -= power;
         }
+        punching = false;
     }
 
     public bool IsAlive()
@@ -111,12 +123,10 @@ public class Guy : MonoBehaviour
         return hp > 0;
     }
 
-    public Rigidbody GetRigidbody()
+    private IEnumerator Die()
     {
-        return rigidbody;
-    }
-    public void setDamage(int damage)
-    {
-        hp -= damage;
+        audioSource.PlayOneShot(dieClip);
+        yield return new WaitForSeconds(dieClip.length);
+        Destroy(gameObject);
     }
 }

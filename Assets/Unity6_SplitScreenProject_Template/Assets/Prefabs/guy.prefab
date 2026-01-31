@@ -252,5 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Guy
   color: {r: 0, g: 0, b: 0, a: 0}
-  speed: 100
+  speed: 10
+  attackSpeed: 2
   claqueClip: {fileID: 8300000, guid: e125f22435c4b210cbcac4f0af097f79, type: 3}
+  dieClip: {fileID: 8300000, guid: 856084e67bfc28244afafad6bda93507, type: 3}
