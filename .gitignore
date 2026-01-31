@@ -101,3 +101,6 @@ Packages/packages-lock.json
 Packages/manifest.json
 .vsconfig
 ProjectSettings/ProjectVersion.txt
+Packages/manifest.json
+Packages/packages-lock.json
+ProjectSettings/ProjectVersion.txt
