@@ -17,12 +17,14 @@ public class PlayerController : MonoBehaviour
     private int hp = 20;
     private Color color = Color.red;
     protected int power = 2;
+    private Animator animator;
     
     private void Start()
     {
        m_rigidBody = GetComponent<Rigidbody>();
+        animator = GetComponentInChildren<Animator>();
     }
-    
+
 
     public void OnMove(InputValue input)
     {
@@ -54,7 +56,6 @@ public class PlayerController : MonoBehaviour
 
     public void OnSpawnGuys(InputValue input)
     {
-        Debug.Log("BEEEP");
         GameObject.FindGameObjectWithTag("GameController").GetComponent<SpawnCrowd>().SpawnGuys(10);
     }
 
@@ -73,11 +74,16 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = new Vector3(0,lookInput.x,0);
         Vector3 lookAtPos =  direction - transform.position;
         // lookAtPos.y = player.transform.position.y; // do not rotate the player around x
-        Debug.Log(lookInput);
        // transform.Rotate(direction);
         transform.Rotate(direction * rotationSpeed);
         //Quaternion targetRotation = Quaternion.LookRotation(direction,Vector3.up);
         //transform.rotation = Quaternion.Lerp(transform.rotation,targetRotation , Time.deltaTime * rotationSpeed);
     }
-    
+
+    public void OnAttack(InputValue input)
+    {
+        animator.SetTrigger("Punch");
+    }
+
+
 }
