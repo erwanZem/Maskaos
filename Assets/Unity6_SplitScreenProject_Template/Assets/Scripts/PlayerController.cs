@@ -52,14 +52,20 @@ public class PlayerController : MonoBehaviour
         lookInput = input.Get<Vector2>();
     }
 
-   /* private void punching(Guy guy)
+    public void OnSpawnGuys(InputValue input)
     {
-        if (guy.IsAlive())
-        {
-            guy.GetRigidbody().AddForce(guy.transform.forward * power * 100);
-            guy.setDamage(power);
-        }
-    }*/
+        Debug.Log("BEEEP");
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<SpawnCrowd>().SpawnGuys(10);
+    }
+
+    /* private void punching(Guy guy)
+     {
+         if (guy.IsAlive())
+         {
+             guy.GetRigidbody().AddForce(guy.transform.forward * power * 100);
+             guy.setDamage(power);
+         }
+     }*/
     void Update()
     {
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);

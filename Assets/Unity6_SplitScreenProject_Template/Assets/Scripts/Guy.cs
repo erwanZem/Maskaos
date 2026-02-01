@@ -31,12 +31,17 @@ public class Guy : MonoBehaviour
 
     protected Rigidbody body;
 
+    protected GameManager gameManager;
+    protected SpawnCrowd spawnCrowd;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        spawnCrowd = GameObject.FindGameObjectWithTag("GameController").GetComponent<SpawnCrowd>();
         audioSource = GetComponent<AudioSource>();
         body = GetComponent<Rigidbody>();
-        power = Random.Range(1, 5);
+        power = Random.Range(3, 5);
     }
 
     // Update is called once per frame
@@ -54,7 +59,8 @@ public class Guy : MonoBehaviour
                 //transform.Translate((transform.forward).normalized * speed * Time.deltaTime);
                 //transform.position = Vector3.MoveTowards(transform.position, ennemy.transform.position, speed);
 
-                body.AddForce(transform.forward * speed);
+                //body.AddForce(transform.forward * speed);
+                transform.Translate(transform.forward * speed * Time.deltaTime);
 
                 Debug.DrawRay(transform.position, transform.forward, Color.black);
             }
@@ -89,7 +95,11 @@ public class Guy : MonoBehaviour
     public void SetColor(Color color)
     {
         this.color = color;
-        (GetComponent("Renderer") as Renderer).material.color = color;
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer renderer in renderers)
+        {
+            renderer.material.color = color;
+        }       
     }
     public Color GetColor()
     {
@@ -108,19 +118,34 @@ public class Guy : MonoBehaviour
 
     private IEnumerator Punch(Guy poorGuy)
     {
-        punching = true;
+        //punching = true;
         yield return new WaitForSeconds(1/attackSpeed);
         if (poorGuy != null && poorGuy.body != null && IsAlive())
         {
             poorGuy.body.AddForce(transform.forward * power * 10, ForceMode.Impulse);
-            hp -= power;
+            if (poorGuy.ApplyDamage(power))
+            {
+                gameManager.PlayerKilled(this, poorGuy);
+
+                if(Random.Range(1,4) == 4)
+                {
+                    spawnCrowd.SpawnGuys(10);
+                }
+            }
         }
-        punching = false;
+        //punching = false;
+        yield return new WaitForEndOfFrame();
     }
 
     public bool IsAlive()
     {
         return hp > 0;
+    }
+
+    public bool ApplyDamage(int damage)
+    {
+        hp -= damage;
+        return hp <= 0;
     }
 
     private IEnumerator Die()
