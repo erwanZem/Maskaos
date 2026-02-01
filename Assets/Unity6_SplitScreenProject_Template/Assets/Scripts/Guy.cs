@@ -154,4 +154,9 @@ public class Guy : MonoBehaviour
         yield return new WaitForSeconds(dieClip.length);
         Destroy(gameObject);
     }
+
+    public Rigidbody GetRigidBody()
+    {
+        return body;
+    }
 }

@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 15f;
     [SerializeField] float maxJumpDuration = 10f;
     [SerializeField] float jumpHeigt = 20f;
-    [SerializeField] float rotationSpeed = .2f;
+    [SerializeField] float rotationSpeed = 1f;
     private float lastJumpTime = 0f;
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -18,10 +18,12 @@ public class PlayerController : MonoBehaviour
     private Color color = Color.red;
     protected int power = 2;
     private Animator animator;
+    private GameManager gameManager;
     
     private void Start()
     {
-       m_rigidBody = GetComponent<Rigidbody>();
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        m_rigidBody = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -36,19 +38,7 @@ public class PlayerController : MonoBehaviour
         //a bouger dans un update
         m_rigidBody.AddForce(transform.up * jumpHeigt,ForceMode.Impulse);
     }
-    
-    /*public void OnAttack(Collider other)
-    {
-        if (other != null && other.isTrigger)
-        {
-            Guy guy = Guy.GetGuy(other.gameObject);
-            if (!guy.IsSameColor(color))
-            {
-                
-            }
-        }
-    }*/
-    
+        
     public void OnLook(InputValue input)
     {
         lookInput = input.Get<Vector2>();
@@ -59,31 +49,43 @@ public class PlayerController : MonoBehaviour
         GameObject.FindGameObjectWithTag("GameController").GetComponent<SpawnCrowd>().SpawnGuys(10);
     }
 
-    /* private void punching(Guy guy)
-     {
-         if (guy.IsAlive())
-         {
-             guy.GetRigidbody().AddForce(guy.transform.forward * power * 100);
-             guy.setDamage(power);
-         }
-     }*/
     void Update()
     {
-        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-        transform.Translate(move * moveSpeed * Time.deltaTime, Space.World);
+        Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.right);
+        Vector3 localRight = transform.worldToLocalMatrix.MultiplyVector(transform.forward * -1);
+
+        transform.Translate(localForward * moveInput.y * moveSpeed * Time.deltaTime);
+        transform.Translate(localRight * moveInput.x * moveSpeed * Time.deltaTime);
+
+
         Vector3 direction = new Vector3(0,lookInput.x,0);
-        Vector3 lookAtPos =  direction - transform.position;
-        // lookAtPos.y = player.transform.position.y; // do not rotate the player around x
-       // transform.Rotate(direction);
         transform.Rotate(direction * rotationSpeed);
-        //Quaternion targetRotation = Quaternion.LookRotation(direction,Vector3.up);
-        //transform.rotation = Quaternion.Lerp(transform.rotation,targetRotation , Time.deltaTime * rotationSpeed);
     }
 
     public void OnAttack(InputValue input)
     {
         animator.SetTrigger("Punch");
+        Collider[] ennemies = Physics.OverlapCapsule(transform.position, transform.position + transform.right * 10, 3);
+        ennemies = ennemies.Where(c => Guy.GetGuy(c.gameObject) != null).ToArray();
+
+        foreach (Collider c in ennemies)
+        {
+            Guy guy = Guy.GetGuy(c.gameObject);
+
+            guy.GetRigidBody().AddForce(transform.right * 100, ForceMode.Impulse);
+
+            if (guy.ApplyDamage(power))
+            {
+                gameManager.PlayerKilled(this, guy);
+            }
+
+
+        }
     }
 
+    public Color GetColor()
+    {
+        return color;
+    }
 
 }

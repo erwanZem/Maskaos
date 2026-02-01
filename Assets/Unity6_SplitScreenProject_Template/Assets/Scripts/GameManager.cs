@@ -34,4 +34,20 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void PlayerKilled(PlayerController killer, Guy killed)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (killer.GetColor() == teams[i])
+            {
+                this.killed[i]++;
+            }
+            if (killed.GetColor() == teams[i])
+            {
+                this.dead[i]++;
+            }
+        }
+    }
+
 }
