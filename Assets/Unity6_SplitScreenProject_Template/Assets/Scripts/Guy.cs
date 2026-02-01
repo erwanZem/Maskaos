@@ -76,7 +76,6 @@ public class Guy : MonoBehaviour
             {
                 if (!IsSameColor(colGuy))
                 {
-                    audioSource?.PlayOneShot(claqueClip);
                     if (!punching)
                     {
                         StartCoroutine(Punch(colGuy));
@@ -118,8 +117,9 @@ public class Guy : MonoBehaviour
 
     private IEnumerator Punch(Guy poorGuy)
     {
-        //punching = true;
+        punching = true;
         yield return new WaitForSeconds(1/attackSpeed);
+        //audioSource?.PlayOneShot(claqueClip);
         if (poorGuy != null && poorGuy.body != null && IsAlive())
         {
             poorGuy.body.AddForce(transform.forward * power * 10, ForceMode.Impulse);
@@ -133,7 +133,7 @@ public class Guy : MonoBehaviour
                 }
             }
         }
-        //punching = false;
+        punching = false;
         yield return new WaitForEndOfFrame();
     }
 
@@ -150,7 +150,7 @@ public class Guy : MonoBehaviour
 
     private IEnumerator Die()
     {
-        audioSource.PlayOneShot(dieClip);
+        //audioSource.PlayOneShot(dieClip);
         yield return new WaitForSeconds(dieClip.length);
         Destroy(gameObject);
     }

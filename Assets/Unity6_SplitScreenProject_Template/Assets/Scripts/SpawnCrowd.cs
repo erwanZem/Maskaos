@@ -33,6 +33,7 @@ public class SpawnCrowd : MonoBehaviour
     {
         SpawnGuys(crowdSize);
         StartCoroutine(SetEnnemies());
+        StartCoroutine(AutoSpawn());
     }
 
     // Update is called once per frame
@@ -58,10 +59,17 @@ public class SpawnCrowd : MonoBehaviour
                     guy.SetColor(Color.blue);
                     break;
                 case 3:
-                    guy.SetColor(Color.yellow);
+                    guy.SetColor(Color.cyan);
                     break;
             }
         }
+    }
+
+    private IEnumerator AutoSpawn()
+    {
+        SpawnGuys(12);
+        yield return new WaitForSeconds(0.2f);
+        StartCoroutine(AutoSpawn());
     }
 
     private IEnumerator SetEnnemies()
