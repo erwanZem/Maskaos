@@ -41,6 +41,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "SpawnGuys",
+                    "type": "Button",
+                    "id": "48adda10-0281-4236-b742-87a0193cf02f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -162,6 +171,17 @@
                     "processors": "StickDeadzone",
                     "groups": ";Gamepad",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1558762-ab26-46e0-a40a-36901ae83b87",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard;Gamepad",
+                    "action": "SpawnGuys",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

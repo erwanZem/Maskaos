@@ -31,11 +31,22 @@ public class SpawnCrowd : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        for(int i = 0; i < crowdSize; i++)
-        {
-            Guy guy = Instantiate(crowdPerson, new Vector3(Random.Range(-arenaSize / 2, arenaSize / 2), 10, Random.Range(-arenaSize / 2, arenaSize / 2)), Quaternion.identity);
+        SpawnGuys(crowdSize);
+        StartCoroutine(SetEnnemies());
+    }
 
-            switch(i % 4)
+    // Update is called once per frame
+    void Update()
+    {
+    }
+
+    public void SpawnGuys(int nbGuys)
+    {
+        for (int i = 0; i < nbGuys; i++)
+        {
+            Guy guy = Instantiate(crowdPerson, new Vector3(Random.Range(-arenaSize / 2, arenaSize / 2), 3, Random.Range(-arenaSize / 2, arenaSize / 2)), Quaternion.identity);
+
+            switch (i % 4)
             {
                 case 0:
                     guy.SetColor(Color.green);
@@ -49,15 +60,8 @@ public class SpawnCrowd : MonoBehaviour
                 case 3:
                     guy.SetColor(Color.yellow);
                     break;
-
             }
         }
-        StartCoroutine(SetEnnemies());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     private IEnumerator SetEnnemies()
